@@ -1,0 +1,11 @@
+EmployeeID,Name,Email,Department,Salary,JoiningDate,Status
+1001,Aarav Sharma,aarav.sharma@example.com,Engineering,65000,2023-01-15,Active
+1002,Priya Verma,priya.verma@example.com,HR,52000,2022-08-20,Active
+1003,Rohan Patel,rohan.patel@example.com,Finance,71000,2021-05-10,Inactive
+1004,Neha Gupta,neha.gupta@example.com,Marketing,58000,2024-02-01,Active
+1005,Vikram Singh,vikram.singh@example.com,Sales,60000,2023-11-18,Active
+1006,Ananya Das,ananya.das@example.com,Engineering,72000,2020-09-12,Active
+1007,Karan Mehta,karan.mehta@example.com,Support,47000,2024-04-08,Inactive
+1008,Sneha Iyer,sneha.iyer@example.com,Design,64000,2023-07-22,Active
+1009,Aditya Jain,aditya.jain@example.com,Engineering,69000,2022-03-30,Active
+1010,Meera Nair,meera.nair@example.com,Operations,56000,2021-12-05,Active
