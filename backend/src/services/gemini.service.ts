@@ -12,7 +12,6 @@ const ALLOWED_SOURCE = ["leads_on_demand", "meridian_tower", "eden_park", "varah
 function buildPrompt(rows: Record<string, string>[]): string {
   return `You are a data extraction engine for a CRM import system. Convert the following raw CSV rows into structured CRM lead records.
 
-
 RULES:
 1. Map each row's fields to these CRM fields: ${CRM_FIELDS.join(", ")}
 2. crm_status must be exactly one of: ${ALLOWED_STATUS.join(", ")} or empty string if unclear
@@ -24,17 +23,13 @@ RULES:
 8. If a row has NEITHER an email NOR a mobile number, exclude it entirely from your output
 9. Return ONLY a JSON array of objects, no markdown, no explanation, no code fences
 
-
 RAW ROWS:
 ${JSON.stringify(rows, null, 2)}
-
 
 Return the JSON array now:`;
 }
 
-
-
-export async function extractCrmBatch(rows: Record<string, string>[]): Promise<any[]> {
+async function extractCrmBatchOnce(rows: Record<string, string>[]): Promise<any[]> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   const prompt = buildPrompt(rows);
@@ -49,4 +44,25 @@ export async function extractCrmBatch(rows: Record<string, string>[]): Promise<a
   } catch (err) {
     throw new Error(`Failed to parse Gemini response as JSON: ${err}`);
   }
+}
+
+export async function extractCrmBatch(
+  rows: Record<string, string>[],
+  maxRetries = 2
+): Promise<any[]> {
+  let lastError: any;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await extractCrmBatchOnce(rows);
+    } catch (err) {
+      lastError = err;
+      console.warn(`Batch extraction attempt ${attempt + 1} failed, retrying...`);
+      if (attempt < maxRetries) {
+        await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+      }
+    }
+  }
+
+  throw lastError;
 }

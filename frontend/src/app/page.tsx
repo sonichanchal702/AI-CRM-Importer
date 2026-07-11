@@ -77,11 +77,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen flex flex-col items-center gap-6 p-8">
-      <h1 className="text-3xl font-semibold">AI CRM Importer</h1>
-      <p className="text-muted-foreground text-center max-w-md">
-        Upload any CRM CSV and let AI map it automatically.
-      </p>
-
       {error && (
         <div className="w-full max-w-5xl border border-red-300 bg-red-50 text-red-700 rounded-lg p-3 text-sm">
           {error}
@@ -89,7 +84,18 @@ export default function Home() {
       )}
 
       {stage === "upload" && (
-        <Button onClick={() => setModalOpen(true)}>Upload CSV</Button>
+        <div className="flex flex-col items-center gap-4 py-24 max-w-md text-center">
+          <h1 className="text-3xl font-semibold tracking-tight">AI CRM Importer</h1>
+          <p className="text-muted-foreground">
+            Upload any CRM CSV and let AI map it automatically.
+          </p>
+          <Button
+            onClick={() => setModalOpen(true)}
+            className="bg-indigo-600 hover:bg-indigo-700 mt-2"
+          >
+            Upload CSV
+          </Button>
+        </div>
       )}
 
       <UploadModal
@@ -111,7 +117,9 @@ export default function Home() {
               <Button variant="outline" onClick={handleCancelPreview}>
                 Cancel
               </Button>
-              <Button onClick={handleConfirmImport}>Confirm Import</Button>
+              <Button onClick={handleConfirmImport} className="bg-indigo-600 hover:bg-indigo-700">
+                Confirm Import
+              </Button>
             </div>
           </div>
           <CsvPreviewTable data={csvData} columns={csvColumns} />
@@ -120,7 +128,7 @@ export default function Home() {
 
       {stage === "processing" && (
         <div className="flex flex-col items-center gap-3 py-12">
-          <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          <div className="h-8 w-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
           <p className="text-muted-foreground">AI is mapping your CRM fields...</p>
         </div>
       )}

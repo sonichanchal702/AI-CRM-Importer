@@ -51,8 +51,9 @@ router.post("/import", upload.single("file"), async (req, res) => {
     }
 
     const batches = chunkArray(rawRows, 25);
+
     const allResults: any[] = [];
-    let skippedCount = 0;
+    const skippedRecords: any[] = [];
 
     for (const batch of batches) {
       try {
@@ -63,20 +64,29 @@ router.post("/import", upload.single("file"), async (req, res) => {
           if (validation.success) {
             allResults.push(validation.data);
           } else {
-            skippedCount++;
+            skippedRecords.push({ record, reason: "Missing email and mobile number" });
           }
+        }
+
+        const droppedCount = batch.length - extracted.length;
+        if (droppedCount > 0) {
+          skippedRecords.push({
+            record: { note: `${droppedCount} row(s) in this batch excluded by AI` },
+            reason: "Excluded by AI — no email or mobile number",
+          });
         }
       } catch (batchError) {
         console.error("Batch processing failed:", batchError);
-        skippedCount += batch.length;
+        batch.forEach((row) => skippedRecords.push({ record: row, reason: "AI extraction failed" }));
       }
     }
 
     res.json({
       totalRows: rawRows.length,
       imported: allResults.length,
-      skipped: skippedCount,
+      skipped: rawRows.length - allResults.length,
       records: allResults,
+      skippedRecords,
     });
   } catch (err) {
     console.error("Import failed:", err);
